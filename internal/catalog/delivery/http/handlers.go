@@ -22,35 +22,20 @@ func NewGameHandler(service service.GameService, logger *logrus.Logger) *GameHan
 	}
 }
 
-func (h *GameHandler) RegisterRoutes(router *gin.Engine) {
-	catalog := router.Group("/api/v1/catalog")
-	{
-		catalog.POST("/games", h.CreateGame)
-		catalog.GET("/games/:id", h.GetGame)
-		catalog.PUT("/games/:id", h.UpdateGame)
-		catalog.DELETE("/games/:id", h.DeleteGame)
-		catalog.GET("/games", h.ListGames)
-		
-		catalog.POST("/genres", h.CreateGenre)
-		//catalog.GET("/genres", h.GetAllGenres)
-		
-		//catalog.POST("/platforms", h.CreatePlatform)
-		//catalog.GET("/platforms", h.GetAllPlatforms)
-	}
-}
-
 func (h *GameHandler) CreateGame(c *gin.Context) {
 	var game models.Game
 	
 	if err := c.ShouldBindJSON(&game); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la désérialisation de la requête")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format de requête invalide"})
+
 		return
 	}
 	
 	if err := h.service.CreateGame(c.Request.Context(), &game); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la création du jeu")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 	
@@ -60,9 +45,11 @@ func (h *GameHandler) CreateGame(c *gin.Context) {
 func (h *GameHandler) GetGame(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
+
 	if err != nil {
 		h.logger.WithError(err).Error("ID de jeu invalide")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de jeu invalide"})
+
 		return
 	}
 	
@@ -70,6 +57,7 @@ func (h *GameHandler) GetGame(c *gin.Context) {
 	if err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la récupération du jeu")
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+
 		return
 	}
 	
@@ -82,6 +70,7 @@ func (h *GameHandler) UpdateGame(c *gin.Context) {
 	if err != nil {
 		h.logger.WithError(err).Error("ID de jeu invalide")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de jeu invalide"})
+
 		return
 	}
 	
@@ -89,6 +78,7 @@ func (h *GameHandler) UpdateGame(c *gin.Context) {
 	if err := c.ShouldBindJSON(&game); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la désérialisation de la requête")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format de requête invalide"})
+
 		return
 	}
 	
@@ -97,6 +87,7 @@ func (h *GameHandler) UpdateGame(c *gin.Context) {
 	if err := h.service.UpdateGame(c.Request.Context(), &game); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la mise à jour du jeu")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 	
@@ -109,12 +100,14 @@ func (h *GameHandler) DeleteGame(c *gin.Context) {
 	if err != nil {
 		h.logger.WithError(err).Error("ID de jeu invalide")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de jeu invalide"})
+
 		return
 	}
 	
 	if err := h.service.DeleteGame(c.Request.Context(), uint(id)); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la suppression du jeu")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 	
@@ -127,6 +120,7 @@ func (h *GameHandler) ListGames(c *gin.Context) {
 	if err := c.ShouldBindQuery(&filter); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la désérialisation des paramètres de requête")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Paramètres de requête invalides"})
+
 		return
 	}
 	
@@ -139,8 +133,9 @@ func (h *GameHandler) ListGames(c *gin.Context) {
 	
 	games, err := h.service.ListGames(c.Request.Context(), &filter)
 	if err != nil {
-		h.logger.WithError(err).Error("Erreur lors de la récupération des jeux")
+		h.logger.WithError(err).Error("Error retrieving games")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 	
@@ -153,14 +148,62 @@ func (h *GameHandler) CreateGenre(c *gin.Context) {
 	if err := c.ShouldBindJSON(&genre); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la désérialisation de la requête")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format de requête invalide"})
+
 		return
 	}
 	
 	if err := h.service.CreateGenre(c.Request.Context(), &genre); err != nil {
 		h.logger.WithError(err).Error("Erreur lors de la création du genre")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 	
 	c.JSON(http.StatusCreated, genre)
+}
+
+func (h *GameHandler) GetAllGenres(c *gin.Context) {
+	genres, err := h.service.GetAllGenres(c.Request.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("Error retrieving genres")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return
+	}
+	
+	c.JSON(http.StatusOK, genres)
+}
+
+func (h *GameHandler) CreatePlatform(c *gin.Context) {
+	platform := models.Platform{}
+	
+	err := c.ShouldBindJSON(&platform)
+	if err != nil {
+		h.logger.WithError(err).Error("Erreur lors de la désérialisation de la requête")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Format de requête invalide"})
+
+		return
+	}
+	
+	err = h.service.CreatePlatform(c.Request.Context(), &platform)
+	if err != nil {
+		h.logger.WithError(err).Error("Erreur lors de la création du genre")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return
+	}
+	
+	c.JSON(http.StatusCreated, platform)
+}
+
+func (h *GameHandler) GetAllPlatforms(c *gin.Context) {
+	platforms, err := h.service.GetAllPlatforms(c.Request.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("Error retrieving platforms")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return
+	}
+	
+	c.JSON(http.StatusOK, platforms)
 }
