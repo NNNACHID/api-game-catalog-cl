@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package catalog;
+
+option go_package = "github.com/votre-username/game-catalog/api/proto/catalog";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+service CatalogService {
+  rpc CreateGame(CreateGameRequest) returns (Game);
+  rpc GetGame(GetGameRequest) returns (Game);
+  rpc UpdateGame(UpdateGameRequest) returns (Game);
+  rpc DeleteGame(DeleteGameRequest) returns (google.protobuf.Empty);
+  rpc ListGames(ListGamesRequest) returns (ListGamesResponse);
+  
+  rpc CreateGenre(CreateGenreRequest) returns (Genre);
+  rpc GetAllGenres(google.protobuf.Empty) returns (GenresResponse);
+  
+  rpc CreatePlatform(CreatePlatformRequest) returns (Platform);
+  rpc GetAllPlatforms(google.protobuf.Empty) returns (PlatformsResponse);
+}
+
+message Game {
+  uint32 id = 1;
+  string title = 2;
+  string description = 3;
+  string developer = 4;
+  string publisher = 5;
+  google.protobuf.Timestamp release_date = 6;
+  repeated Genre genres = 7;
+  repeated Platform platforms = 8;
+  double price = 9;
+  string image_url = 10;
+  double average_rating = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+}
+
+message Genre {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message Platform {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message CreateGameRequest {
+  string title = 1;
+  string description = 2;
+  string developer = 3;
+  string publisher = 4;
+  google.protobuf.Timestamp release_date = 5;
+  repeated uint32 genre_ids = 6;
+  repeated uint32 platform_ids = 7;
+  double price = 8;
+  string image_url = 9;
+}
+
+message GetGameRequest {
+  uint32 id = 1;
+}
+
+message UpdateGameRequest {
+  uint32 id = 1;
+  string title = 2;
+  string description = 3;
+  string developer = 4;
+  string publisher = 5;
+  google.protobuf.Timestamp release_date = 6;
+  repeated uint32 genre_ids = 7;
+  repeated uint32 platform_ids = 8;
+  double price = 9;
+  string image_url = 10;
+}
+
+message DeleteGameRequest {
+  uint32 id = 1;
+}
+
+message ListGamesRequest {
+  string title = 1;
+  string developer = 2;
+  string publisher = 3;
+  repeated string genres = 4;
+  repeated string platforms = 5;
+  double min_price = 6;
+  double max_price = 7;
+  double min_rating = 8;
+  string sort_by = 9;
+  string sort_order = 10;
+  int32 page = 11;
+  int32 page_size = 12;
+}
+
+message ListGamesResponse {
+  repeated Game games = 1;
+  int64 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  int32 total_pages = 5;
+}
+
+message CreateGenreRequest {
+  string name = 1;
+}
+
+message GenresResponse {
+  repeated Genre genres = 1;
+}
+
+message CreatePlatformRequest {
+  string name = 1;
+}
+
+message PlatformsResponse {
+  repeated Platform platforms = 1;
+}
