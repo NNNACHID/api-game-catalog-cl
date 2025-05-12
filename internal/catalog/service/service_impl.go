@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/models"
@@ -23,14 +22,6 @@ func NewGameService(repo repository.GameRepository, logger *logrus.Logger) GameS
 }
 
 func (s *gameService) CreateGame(ctx context.Context, game *models.Game) error {
-	if game.Title == "" {
-		return errors.New("le titre du jeu est obligatoire")
-	}
-	
-	now := time.Now()
-	game.CreatedAt = now
-	game.UpdatedAt = now
-	
 	s.logger.WithFields(logrus.Fields{
 		"title": game.Title,
 	}).Info("Création d'un nouveau jeu")
@@ -44,13 +35,10 @@ func (s *gameService) GetGameByID(ctx context.Context, id uint) (*models.Game, e
 }
 
 func (s *gameService) UpdateGame(ctx context.Context, game *models.Game) error {
-	existingGame, err := s.repo.GetByID(ctx, game.ID)
+	game, err := s.repo.GetByID(ctx, game.ID)
 	if err != nil {
 		return err
 	}
-	
-	game.UpdatedAt = time.Now()
-	game.CreatedAt = existingGame.CreatedAt 
 	
 	s.logger.WithFields(logrus.Fields{
 		"id":    game.ID,

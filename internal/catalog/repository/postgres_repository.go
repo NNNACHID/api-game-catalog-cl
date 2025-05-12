@@ -67,12 +67,6 @@ func (r *PostgresGameRepository) List(ctx context.Context, filter *models.GameFi
 	if filter.Publisher != "" {
 		query = query.Where("publisher ILIKE ?", "%"+filter.Publisher+"%")
 	}
-	if filter.MinPrice != nil {
-		query = query.Where("price >= ?", *filter.MinPrice)
-	}
-	if filter.MaxPrice != nil {
-		query = query.Where("price <= ?", *filter.MaxPrice)
-	}
 	if filter.MinRating != nil {
 		query = query.Where("average_rating >= ?", *filter.MinRating)
 	}

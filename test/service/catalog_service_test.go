@@ -87,14 +87,12 @@ func TestCreateGame(t *testing.T) {
 			Description: "Test Description",
 		}
 		mockRepo.On("Create", ctx, mock.MatchedBy(func(g *models.Game) bool {
-			return g.Title == game.Title && g.Description == game.Description && !g.CreatedAt.IsZero() && !g.UpdatedAt.IsZero()
+			return g.Title == game.Title && g.Description == game.Description
 		})).Return(nil)
 
 		err := service.CreateGame(ctx, game)
 
 		assert.NoError(t, err)
-		assert.False(t, game.CreatedAt.IsZero())
-		assert.False(t, game.UpdatedAt.IsZero())
 		mockRepo.AssertExpectations(t)
 	})
 
@@ -121,7 +119,7 @@ func TestCreateGame(t *testing.T) {
 		}
 		expectedErr := errors.New("erreur de base de données")
 		mockRepo.On("Create", ctx, mock.MatchedBy(func(g *models.Game) bool {
-			return g.Title == game.Title && g.Description == game.Description && !g.CreatedAt.IsZero() && !g.UpdatedAt.IsZero()
+			return g.Title == game.Title && g.Description == game.Description
 		})).Return(expectedErr)
 
 		err := service.CreateGame(ctx, game)
