@@ -36,8 +36,8 @@ type GameFilter struct {
 	MinRating *float64 `form:"min_rating"`
 	SortBy    string   `form:"sort_by"`
 	SortOrder string   `form:"sort_order"`
-	Page      int      `form:"page"`
-	PageSize  int      `form:"page_size"`
+	Page      int      `form:"page" default:"1"`
+	PageSize  int      `form:"page_size" default:"10"`
 }
 
 type GameResponse struct {

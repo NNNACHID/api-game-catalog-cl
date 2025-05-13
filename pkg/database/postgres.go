@@ -25,7 +25,6 @@ func NewPostgresConnection(config PostgresConfig, log *logrus.Logger) (*gorm.DB,
 		config.Host, config.User, config.Password, config.DBName, config.Port, config.SSLMode,
 	)
 
-
 	gormLogger := logger.New(
 		&logrusWriter{log},
 		logger.Config{
