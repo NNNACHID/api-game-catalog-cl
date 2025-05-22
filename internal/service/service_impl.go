@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/sirupsen/logrus"
-	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/models"
-	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/repository"
+	"github.com/NNNACHID/api-game-catalog-cl/internal/models"
+	"github.com/NNNACHID/api-game-catalog-cl/internal/repository"
 )
 
 type gameService struct {

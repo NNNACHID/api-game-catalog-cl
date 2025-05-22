@@ -9,14 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	catalogHTTP "github.com/NNNACHID/api-game-catalog-cl/internal/delivery/http"
 	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/repository"
 	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/service"
-	catalogHTTP "github.com/NNNACHID/api-game-catalog-cl/internal/catalog/delivery/http"
 	"github.com/NNNACHID/api-game-catalog-cl/internal/pkg/config"
 	"github.com/NNNACHID/api-game-catalog-cl/internal/pkg/migrations"
 	"github.com/NNNACHID/api-game-catalog-cl/pkg/database"
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -34,12 +36,12 @@ func main() {
 		logger.WithError(err).Fatal("Impossible de se connecter à la base de données")
 	}
 
-	err = migrations.RunMigrations(db, logger) 
+	err = migrations.RunMigrations(db, logger)
 	if err != nil {
 		logger.WithError(err).Fatal("Erreur lors des migrations")
 	}
 
-	err = migrations.SeedData(db, logger) 
+	err = migrations.SeedData(db, logger)
 	if err != nil {
 		logger.WithError(err).Fatal("Erreur lors de l'initialisation des données de test")
 	}
@@ -50,16 +52,18 @@ func main() {
 
 	router := gin.New()
 	router.Use(gin.Recovery())
-	
+
+	router.GET("./api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	router.Use(func(c *gin.Context) {
 		start := time.Now()
 		path := c.Request.URL.Path
-		
+
 		c.Next()
-		
+
 		latency := time.Since(start)
 		statusCode := c.Writer.Status()
-		
+
 		logger.WithFields(logrus.Fields{
 			"status":     statusCode,
 			"latency":    latency,
@@ -83,7 +87,7 @@ func main() {
 	go func() {
 		logger.Infof("Serveur HTTP démarré sur le port %s", cfg.Server.Port)
 		err := server.ListenAndServe()
-		if err != nil{
+		if err != nil {
 			logger.WithError(err).Fatal("Erreur lors du démarrage du serveur HTTP")
 		}
 	}()

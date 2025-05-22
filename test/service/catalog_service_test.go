@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/models"
-	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/service"
+	"github.com/NNNACHID/api-game-catalog-cl/internal/models"
+	"github.com/NNNACHID/api-game-catalog-cl/internal/service"
 	//"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/repository"
 )
 

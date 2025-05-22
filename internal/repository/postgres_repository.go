@@ -6,7 +6,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/models"
+	"github.com/NNNACHID/api-game-catalog-cl/internal/models"
 	"gorm.io/gorm"
 )
 

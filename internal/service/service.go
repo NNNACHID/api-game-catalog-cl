@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/NNNACHID/api-game-catalog-cl/internal/catalog/models"
+	"github.com/NNNACHID/api-game-catalog-cl/internal/models"
 )
 
 type GameService interface {
